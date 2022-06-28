@@ -2,7 +2,8 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 
     <title>Web Template</title>
 
@@ -27,7 +28,8 @@
 
                         </li>
                         <li class="nav-item">
-                            <a class="text-white text-decoration-none" type="button" onclick="adminlogout()" aria-current="page" href="/home.html">Logout</a>
+                            <a class="text-white text-decoration-none" type="button" onclick="adminlogout()"
+                                aria-current="page" href="/home.html">Logout</a>
                         </li>
                     </ul>
                 </div>
@@ -106,8 +108,10 @@
             </div>
 
         </div>
-    </section>      
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
     <script type="text/javascript" src="js/app.js"></script>
     <script>
         function loginAccess() {
@@ -115,10 +119,29 @@
             if (!loginData) {
                 window.location.href = "/login.html"
             } else {
-                document.getElementById('logged-user').innerText = loginData?.email;    
+                document.getElementById('logged-user').innerText = loginData?.email;
             }
         }
-        loginAccess()
+        loginAccess();
+
+        window.onload = function () {
+            selectedBook();
+            function selectedBook() {
+                let bookdata = JSON.parse(localStorage.getItem("book-data"));
+                const tableData11 = bookdata.map(book => (
+     `
+      <tr>
+      <td>${book.bookname}</td>
+      <td>${book.bookauthor}</td>
+      <td>${book.bookprice}</td>
+      <td>${book.bookusers}</td>         
+      </tr>
+      `
+                )).join('');
+                const tbody = document.querySelector('#admin-body');
+                tbody.innerHTML = tableData11;
+            }
+        }
     </script>
 </body>
 
