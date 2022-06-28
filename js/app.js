@@ -114,82 +114,106 @@ function userlogout() {
 }
 
 // Display data of create book in user dashboard select box
+if (window.location.href == '/user-dashboard.html') {       
 
-function selectBook() {
-    let userlogindata = JSON.parse(localStorage.getItem("user-login-data"));
-    let bookdata = JSON.parse(localStorage.getItem("book-data"));
-    let showData = [];
-
-    if (userlogindata && bookdata.length > 0) {
-        bookdata.map((bookObject) => {
-            if (bookObject.bookusers.length > 0) {
-                bookObject.bookusers.map((bookuser) => {
-                    if (bookuser === userlogindata.email) {
-                        showData.push(bookObject);
-                    }
-                });
-            }
+    function selectBook() {
+        let userlogindata = JSON.parse(localStorage.getItem("user-login-data"));
+        let bookdata = JSON.parse(localStorage.getItem("book-data"));
+        let showData = [];
+        
+        if (userlogindata && bookdata.length > 0) {
+            bookdata.map((bookObject) => {
+                if (bookObject.bookusers.length > 0) {
+                    bookObject.bookusers.map((bookuser) => {
+                        if (bookuser === userlogindata.email) {
+                            showData.push(bookObject);
+                        }
+                    });
+                }
         });
+        
+        console.log("showData in selectBook", showData);
 
         var tableData = showData.map(book => (
             `
-              <tr>
-                <td>${book.bookname}</td>
+            <tr>
+            <td>${book.bookname}</td>
                 <td>${book.bookauthor}</td>
                 <td>${book.bookprice}</td>         
-              </tr>
+                </tr>
             `
         )).join('');
-
+        
         var tbody = document.querySelector('#body');
         tbody.innerHTML = tableData;
+        
     }
-
+    
     let select = document.getElementById("select-book");
     bookdata.map((a) => {
         return (
             select.options[select.options.length] = new Option(`${a.bookname}`)
-        )
-    })
-    select.onchange = (e) => {
-        if (e.target.value) {
-            const filteredData = bookdata.find((book) => book.bookname === e.target.value);
-
-            if (!showData.find((d) => d.bookname === filteredData.bookname)) {
-                showData.push(filteredData);
-                console.log("showdata", showData);
-                let newBookData = []
-                const updatedData = {
-                    ...filteredData,
-                    bookusers: [...filteredData.bookusers, userlogindata.email]
-                }
-                const index = bookdata.findIndex((d) => d.bookname === e.target.value);
-                if (bookdata[index].bookusers.includes(userlogindata.email)) {
-                    alert('already included')
-                } else {
-                    bookdata[index] = updatedData;
-                    newBookData = bookdata
-                    localStorage.setItem("book-data", JSON.stringify(newBookData))
-                }
+            )
+        })
+        select.onchange = (e) => {
+            if (e.target.value) {
+                const filteredData = bookdata.find((book) => book.bookname === e.target.value);
+                
+                if (!showData.find((d) => d.bookname === filteredData.bookname)) {
+                    showData.push(filteredData);
+                    console.log("showdata", showData);
+                    let newBookData = []
+                    const updatedData = {
+                        ...filteredData,
+                        bookusers: [...filteredData.bookusers, userlogindata.email]
+                    }
+                    const index = bookdata.findIndex((d) => d.bookname === e.target.value);
+                    if (bookdata[index].bookusers.includes(userlogindata.email)) {
+                        alert('already included')
+                    } else {
+                        bookdata[index] = updatedData;
+                        newBookData = bookdata
+                        localStorage.setItem("book-data", JSON.stringify(newBookData))
+                    }
             }
         }
         var tableData = showData.map(book => (
             `
-              <tr>
-                <td>${book.bookname}</td>
-                <td>${book.bookauthor}</td>
-                <td>${book.bookprice}</td>         
-              </tr>
+            <tr>
+            <td>${book.bookname}</td>
+            <td>${book.bookauthor}</td>
+            <td>${book.bookprice}</td>         
+            </tr>
             `
-        )).join('');
-
+            )).join('');
+            
         var tbody = document.querySelector('#body');
         tbody.innerHTML = tableData;
-
+        
     }
 }
 selectBook();
+}
 
+
+// Display book & user data in admin dashboard
+function selectedBook() {
+    let bookdata = JSON.parse(localStorage.getItem("book-data"));
+    const tableData11 = bookdata.map(book => (
+        `
+          <tr>
+            <td>${book.bookname}</td>
+            <td>${book.bookauthor}</td>
+            <td>${book.bookprice}</td>
+            <td>${book.bookusers}</td>         
+          </tr>
+        `
+    )).join('');
+
+    const tbody = document.querySelector('#admin-body');
+    tbody.innerHTML = tableData11;
+}
+selectedBook();
 
 
 

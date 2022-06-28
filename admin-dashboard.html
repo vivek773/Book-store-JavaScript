@@ -48,7 +48,7 @@
                     </button>
                 </div>
                 <div>
-                    <div class="user-dashboard-table">
+                    <div class="admin-dashboard-table">
                         <h3 class="text-center text-white">USER BOOK DETAILS</h3>
                         <table class="table table-dark table-sm border-white" id="display">
                             <thead>
@@ -56,9 +56,10 @@
                                     <th scope="col" class="text-primary">BOOK NAME</th>
                                     <th scope="col" class="text-warning">BOOK AUTHOR</th>
                                     <th scope="col" class="text-success ">BOOK PRICE</th>
+                                    <th scope="col" class="text-white ">USERS</th>
                                 </tr>
                             </thead>
-                            <tbody id="body">
+                            <tbody id="admin-body">
                             </tbody>
                         </table>
                     </div>
@@ -111,7 +112,6 @@
     <script>
         function loginAccess() {
             let loginData = JSON.parse(localStorage.getItem("admin-login-data"));
-            console.log(loginData);
             if (!loginData) {
                 window.location.href = "/login.html"
             } else {
