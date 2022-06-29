@@ -113,73 +113,52 @@ function userlogout() {
     setIsLoggedin(false);
 }
 
-
-
-window.onload = function() {
-    selectBook();
-
-    $(document).ready(function(){
-        let userlogindata = JSON.parse(localStorage.getItem("user-login-data"));
-        let bookdata = JSON.parse(localStorage.getItem("book-data"));
-                         
-        $('.delete').click(function(e){
-            //login   
-           
-            let loginemail = userlogindata.email;
-            const filterdata = bookdata.find((book) => book.bookname === e.target.id); 
-            console.log(filterdata.bookusers);
-            let userarray = filterdata.bookusers;
-            const index = userarray.indexOf(loginemail);
-            let removedata = userarray.splice(index, 1);
-            console.log("fgf", removedata);
+function selectBook() {
+    let userlogindata = JSON.parse(localStorage.getItem("user-login-data"));
+    let bookdata = JSON.parse(localStorage.getItem("book-data"));
+    let showData = [];
+    if (userlogindata && bookdata.length > 0) {
+        bookdata.map((bookObject) => {
+            if (bookObject.bookusers.length > 0) {
+                bookObject.bookusers.map((bookuser) => {
+                    if (bookuser === userlogindata.email) {
+                        showData.push(bookObject);
+                    }
+                });
+            }
         });
-    });
+        var tableData = showData.map(book => (
+            `
+            <tr>
+            <td>${book.bookname}</td>
+            <td>${book.bookauthor}</td>
+            <td>${book.bookprice}</td>   
+            <td>
+            <div><button class="delete" id="${book.bookname}">Delete</button> </div>
+            </td>       
+            </tr>
+            `
+        )).join('');
 
-    function selectBook() {
-        let userlogindata = JSON.parse(localStorage.getItem("user-login-data"));
-        let bookdata = JSON.parse(localStorage.getItem("book-data"));
-        let showData = [];
-        
-        if (userlogindata && bookdata.length > 0) {
-            bookdata.map((bookObject) => {
-                if (bookObject.bookusers.length > 0) {
-                    bookObject.bookusers.map((bookuser) => {
-                        if (bookuser === userlogindata.email) {
-                            showData.push(bookObject);
-                        }
-                    });
-                }
-            });  
-            var tableData = showData.map(book => (
-                `
-                <tr>
-                <td>${book.bookname}</td>
-                <td>${book.bookauthor}</td>
-                <td>${book.bookprice}</td>   
-                <td>
-                <div><button class="delete" id="${book.bookname}">Delete</button> </div>
-                </td>       
-                </tr>
-                `
-                )).join('');
-                
         var tbody = document.querySelector('#body');
         tbody.innerHTML = tableData;
-        
+        // console.log(showData);
+        // return showData;
+
     }
-    
+
     let select = document.getElementById("select-book");
     bookdata.map((a) => {
         return (
             select.options[select.options.length] = new Option(`${a.bookname}`)
-            )
-        })
-        select.onchange = (e) => {
-            if (e.target.value) {
-                const filteredData = bookdata.find((book) => book.bookname === e.target.value);
-                
-                if (!showData.find((d) => d.bookname === filteredData.bookname)) {
-                    showData.push(filteredData);
+        )
+    })
+    select.onchange = (e) => {
+        if (e.target.value) {
+            const filteredData = bookdata.find((book) => book.bookname === e.target.value);
+
+            if (!showData.find((d) => d.bookname === filteredData.bookname)) {
+                showData.push(filteredData);
                 let newBookData = []
                 const updatedData = {
                     ...filteredData,
@@ -197,47 +176,85 @@ window.onload = function() {
         }
         var tableData = showData.map(book => (
             `
-            <tr>
-            <td>${book.bookname}</td>
-            <td>${book.bookauthor}</td>
-            <td>${book.bookprice}</td>    
-            <td>
-                <div><button class="delete">Delete</button> </div>
-                </td>        
-            </tr>
-            `
-            )).join('');
-            
-            var tbody = document.querySelector('#body');
-            tbody.innerHTML = tableData;
-            
-        }
+        <tr>
+        <td>${book.bookname}</td>
+        <td>${book.bookauthor}</td>
+        <td>${book.bookprice}</td>    
+        <td>
+            <div><button class="delete" id="${book.bookname}">Delete</button> </div>
+            </td>        
+        </tr>
+        `
+        )).join('');
+
+        var tbody = document.querySelector('#body');
+        tbody.innerHTML = tableData;
+
     }
 }
-    
-    
-    // } 
-    
-    // function displaydata (){
-        //     var tableData = showData.map(book => (
-//         `
-//     <tr>
-//     <td>${book.bookname}</td>
-//     <td>${book.bookauthor}</td>
-//     <td>${book.bookprice}</td>         
-//     </tr>
-//     `
-//     )).join('');
 
-//     var tbody = document.querySelector('#body');
-//     tbody.innerHTML = tableData;
-// }
+window.onload = function () {
+    selectBook();
+}
 
+$(document).ready(function () {
+    $('.delete').click(function (e) {
+        let userlogindata = JSON.parse(localStorage.getItem("user-login-data"));
+        let bookdata = JSON.parse(localStorage.getItem("book-data"));
+        let loginemail = userlogindata.email;
+        const filterdata = bookdata.find((book) => book.bookname === e.target.id);
+        let showData = [];
+        const bookindex = bookdata.findIndex((d) => d.bookname === e.target.id);
+        if (bookdata[bookindex].bookusers.includes(loginemail)) {
+            if (window.confirm('Are You Sure To Delete')) {
+                const userarray = filterdata.bookusers;
+                const index = userarray.indexOf(loginemail);
+                userarray.splice(index, 1);
+                // console.log(userarray); 
+                let newBookData = []
+                const updatedbookdata = {
+                    ...filterdata,
+                    bookusers: userarray
+                }
+                bookdata[bookindex] = updatedbookdata;
+                newBookData = bookdata;
+                localStorage.setItem("book-data", JSON.stringify(newBookData));
+                if (userlogindata && bookdata.length > 0) {
+                    bookdata.map((bookObject) => {
+                        if (bookObject.bookusers.length > 0) {
+                            bookObject.bookusers.map((bookuser) => {
+                                if (bookuser === userlogindata.email) {
+                                    showData.push(bookObject);
+                                }
+                            });
+                        }
+                    });
+                    var tableData = showData.map(book => (
+                        `
+                        <tr>
+                        <td>${book.bookname}</td>
+                        <td>${book.bookauthor}</td>
+                        <td>${book.bookprice}</td>   
+                        <td>
+                        <div><button class="delete" id="${book.bookname}">Delete</button> </div>
+                        </td>       
+                        </tr>
+                        
+                        `
+                    )).join('');
 
-// Display book & user data in admin dashboard
+                    var tbody = document.querySelector('#body');
+                    tbody.innerHTML = tableData;
+                    // console.log(showData);
+                    // return showData;
 
-
-
+                }
+            }
+        } else {
+            console.log('else');
+        }
+    });
+});
 
 
 // [{"bookname":"JavaScript","bookprice":"500","bookauthor":"Vivek Singh","bookusers":[]},{"bookname":"HTML","bookprice":"400","bookauthor":"Rahul","bookusers":[]},{"bookname":"Python","bookprice":"500","bookauthor":"Piyush","bookusers":[]},{"bookname":"CSS","bookprice":"400","bookauthor":"Nitesh","bookusers":[]}]
